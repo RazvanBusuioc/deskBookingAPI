@@ -2,7 +2,7 @@ package com.upb.deskBooking.service;
 
 import com.upb.deskBooking.repository.RoomRepository;
 import com.upb.deskBooking.repository.model.Room;
-import com.upb.deskBooking.repository.model.RoomComponent;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +25,23 @@ public class RoomService {
     }
 
     public Room save(Room room) {
-        List<RoomComponent> components = room.getComponents();
-        addNameToComponents(components);
+        ServiceUtils.INSTANCE.addNameToComponents(room.getComponents());
         return roomRepository.save(room);
     }
 
-    private static void addNameToComponents(List<RoomComponent> components) {
-        int idx = 0;
-        for (RoomComponent component : components)
-            if (component.getName() == null && component.getType().equals(RoomComponent.DESK))
-                component.setName(RoomComponent.DESK + idx++);
+    public Room update (Long id, Room updatedRoom) {
+        ServiceUtils.INSTANCE.addNameToComponents(updatedRoom.getComponents());
+        Room deprecatedRoom = getById(id);
+        if (deprecatedRoom == null)
+            return null;
+
+        BeanUtils.copyProperties(updatedRoom, deprecatedRoom, "id");
+        return roomRepository.save(deprecatedRoom);
     }
+
+    public void deleteById(Long id) {
+        roomRepository.deleteById(id);
+    }
+
+
 }
