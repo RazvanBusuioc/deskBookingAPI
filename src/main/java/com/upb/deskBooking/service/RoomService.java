@@ -39,9 +39,14 @@ public class RoomService {
         return roomRepository.save(deprecatedRoom);
     }
 
-    public void deleteById(Long id) {
-        roomRepository.deleteById(id);
+    public boolean deleteById(Long id) {
+        boolean exists = roomRepository.existsById(id);
+        if (exists)
+            roomRepository.deleteById(id);
+        return exists;
     }
 
-
+    public void deleteAll() {
+        roomRepository.deleteAll();
+    }
 }

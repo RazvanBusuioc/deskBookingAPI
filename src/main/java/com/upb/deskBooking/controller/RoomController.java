@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("rooms")
@@ -22,13 +25,17 @@ public class RoomController {
     RoomService roomService;
 
     @GetMapping("")
-    public List<Room> getRooms() {
-        return roomService.getAll();
+    public ResponseEntity<List<Room>> getRooms() {
+        return new ResponseEntity<>(roomService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Room getById(@PathVariable(name = "id") Long roomId) {
-        return roomService.getById(roomId);
+    public ResponseEntity<Room> getById(@PathVariable(name = "id") Long roomId) {
+        Room room = roomService.getById(roomId);
+        if (room == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
     @PostMapping(path     = "",
@@ -58,19 +65,40 @@ public class RoomController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public void deleteById(@PathVariable(name = "id") Long roomId) {
-        roomService.deleteById(roomId);
+    public ResponseEntity<Long> deleteById(@PathVariable(name = "id") Long roomId) {
+        boolean exists = roomService.deleteById(roomId);
+        if (exists)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping(path = "")
+    public ResponseEntity<Long> deleteAll() {
+        roomService.deleteAll();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     // EXCEPTION HANDLERS
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException cve) {
         List<String> errorMessages = cve.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .toList();
-
         return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException manve) {
+        List<String> errorMessages = manve
+                .getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
+    }
+
 }
