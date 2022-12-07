@@ -2,9 +2,7 @@ package com.upb.deskBooking.service;
 
 import com.upb.deskBooking.repository.model.RoomComponent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum ServiceUtils {
     INSTANCE;
@@ -26,4 +24,14 @@ public enum ServiceUtils {
                 componentToIndex.put(componentType, index);
             }
     }
+    public boolean isSameDay(Date date1, Date date2) {
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(date1);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(date2);
+        return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
+                && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
+                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
+    }
+
 }
