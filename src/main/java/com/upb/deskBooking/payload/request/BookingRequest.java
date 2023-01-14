@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class BookingRequest {
     @NotNull
-    Long userId;
+    String username;
     @NotNull
     Long roomComponentId;
     @NotNull @JsonFormat(pattern="dd.MM.yyyy")
@@ -16,12 +16,12 @@ public class BookingRequest {
     public BookingRequest() {
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getRoomComponentId() {

@@ -9,11 +9,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("api/bookings")
 public class BookingController {
@@ -22,14 +24,16 @@ public class BookingController {
     BookingService bookingService;
 
     @GetMapping("")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<List<Booking>> getBookings(
             @RequestParam(name="date", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date date,
-            @RequestParam(name="userId", required = false) Long userId,
+            @RequestParam(name="username", required = false) String username,
             @RequestParam(name="roomId", required = false) Long roomId)
     {
-        return new ResponseEntity<>(bookingService.getAll(date, userId, roomId), HttpStatus.OK);
+        return new ResponseEntity<>(bookingService.getAll(date, username, roomId), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping(path     = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,6 +42,7 @@ public class BookingController {
         return new ResponseEntity<>(booking, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @DeleteMapping(path = "")
     public ResponseEntity<Long> deleteBooking(@RequestBody BookingRequest bookingRequest) {
         boolean exists = bookingService.deleteBooking(bookingRequest);

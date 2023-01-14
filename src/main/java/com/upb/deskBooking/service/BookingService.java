@@ -23,9 +23,12 @@ public class BookingService {
     @Autowired
     RoomService roomService;
 
-    public List<Booking> getAll(Date date, Long userId, Long roomId) {
+    @Autowired
+    UserService userService;
+
+    public List<Booking> getAll(Date date, String username, Long roomId) {
         if (roomId == null)
-            return getAllByExample(date, null, userId);
+            return getAllByExample(date, null, username);
 
         Room room = roomService.getById(roomId);
         if (room == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -34,14 +37,14 @@ public class BookingService {
         List<Booking> result = new ArrayList<>();
 
         for (RoomComponent component : components) {
-            result.addAll(getAllByExample(date, component, userId));
+            result.addAll(getAllByExample(date, component, username));
         }
         return result;
     }
 
-    public List<Booking> getAllByExample(Date date, RoomComponent component, Long userId) {
+    public List<Booking> getAllByExample(Date date, RoomComponent component, String username) {
         Booking booking = new Booking();
-        booking.setUserId(userId);
+        booking.setUser(userService.getByUsername(username));
         booking.setRoomComponent(component);
         ExampleMatcher matcher = ExampleMatcher.matchingAll().withIgnoreNullValues();
         Example<Booking> example = Example.of(booking, matcher);
@@ -66,7 +69,12 @@ public class BookingService {
         if (bookingRepository.existsById(new BookingId(roomComponent, bookingRequest.getDate())))
             throw new ResponseStatusException(HttpStatus.CONFLICT);
 
-        Booking booking = new Booking(bookingRequest.getUserId(), bookingRequest.getDate(), roomComponent);
+        String username = bookingRequest.getUsername();
+        User user = userService.getByUsername(username);
+        if (user == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        Booking booking = new Booking(user, bookingRequest.getDate(), roomComponent);
         return bookingRepository.save(booking);
     }
 

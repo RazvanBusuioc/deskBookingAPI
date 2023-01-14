@@ -12,8 +12,8 @@ import java.util.Date;
 @IdClass(BookingId.class)
 public class Booking implements Cloneable {
 
-    @NotNull
-    Long userId;
+    @NotNull @OneToOne(cascade = {CascadeType.MERGE})
+    User user;
     @Id @NotNull @OneToOne(cascade = {CascadeType.MERGE})
     RoomComponent roomComponent;
     @Id @NotNull @JsonFormat(pattern="dd.MM.yyyy")
@@ -22,18 +22,18 @@ public class Booking implements Cloneable {
     public Booking() {
     }
 
-    public Booking(Long userId, Date date, RoomComponent roomComponent) {
-        this.userId = userId;
+    public Booking(User user, Date date, RoomComponent roomComponent) {
+        this.user = user;
         this.date = date;
         this.roomComponent = roomComponent;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public RoomComponent getRoomComponent() {

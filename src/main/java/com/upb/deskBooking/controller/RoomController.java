@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +26,13 @@ public class RoomController {
     RoomService roomService;
 
     @GetMapping("")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<List<Room>> getRooms() {
         return new ResponseEntity<>(roomService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Room> getById(@PathVariable(name = "id") Long roomId) {
         Room room = roomService.getById(roomId);
         if (room == null)
@@ -41,6 +44,7 @@ public class RoomController {
     @PostMapping(path     = "",
                  consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Room> createRoom(@Valid @RequestBody Room newRoom) {
         Room room = roomService.save(newRoom);
 
@@ -51,6 +55,7 @@ public class RoomController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path     = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,6 +69,7 @@ public class RoomController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Long> deleteById(@PathVariable(name = "id") Long roomId) {
         boolean exists = roomService.deleteById(roomId);
@@ -73,6 +79,7 @@ public class RoomController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "")
     public ResponseEntity<Long> deleteAll() {
         roomService.deleteAll();
