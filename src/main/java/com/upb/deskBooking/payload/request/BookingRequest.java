@@ -1,11 +1,11 @@
-package com.upb.deskBooking.repository.model;
+package com.upb.deskBooking.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 import java.util.Date;
 
-public class BookingRequestParam {
+public class BookingRequest {
     @NotNull
     Long userId;
     @NotNull
@@ -13,7 +13,7 @@ public class BookingRequestParam {
     @NotNull @JsonFormat(pattern="dd.MM.yyyy")
     Date date;
 
-    public BookingRequestParam() {
+    public BookingRequest() {
     }
 
     public Long getUserId() {

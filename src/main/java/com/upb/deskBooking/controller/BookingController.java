@@ -1,9 +1,9 @@
 package com.upb.deskBooking.controller;
 
 import com.upb.deskBooking.repository.model.Booking;
-import com.upb.deskBooking.repository.model.BookingRequestParam;
+import com.upb.deskBooking.payload.request.BookingRequest;
 import com.upb.deskBooking.service.BookingService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -33,14 +33,14 @@ public class BookingController {
     @PostMapping(path     = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Booking> createBooking(@Valid @RequestBody BookingRequestParam newBooking) {
+    public ResponseEntity<Booking> createBooking(@Valid @RequestBody BookingRequest newBooking) {
         Booking booking = bookingService.save(newBooking);
         return new ResponseEntity<>(booking, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "")
-    public ResponseEntity<Long> deleteBooking(@RequestBody BookingRequestParam bookingRequestParam) {
-        boolean exists = bookingService.deleteBooking(bookingRequestParam);
+    public ResponseEntity<Long> deleteBooking(@RequestBody BookingRequest bookingRequest) {
+        boolean exists = bookingService.deleteBooking(bookingRequest);
         if (exists)
             return new ResponseEntity<>(HttpStatus.OK);
         else

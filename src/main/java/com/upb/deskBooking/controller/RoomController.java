@@ -2,9 +2,9 @@ package com.upb.deskBooking.controller;
 
 import com.upb.deskBooking.repository.model.Room;
 import com.upb.deskBooking.service.RoomService;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,7 +83,7 @@ public class RoomController {
     // EXCEPTION HANDLERS
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException cve) {
-        List<String> errorMessages = cve.getConstraintViolations()
+            List<String> errorMessages = cve.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .toList();

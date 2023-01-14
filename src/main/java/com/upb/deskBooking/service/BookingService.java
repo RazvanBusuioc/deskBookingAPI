@@ -1,5 +1,6 @@
 package com.upb.deskBooking.service;
 
+import com.upb.deskBooking.payload.request.BookingRequest;
 import com.upb.deskBooking.repository.BookingRepository;
 import com.upb.deskBooking.repository.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,26 +57,26 @@ public class BookingService {
         return result;
     }
 
-    public Booking save(BookingRequestParam bookingRequestParam) {
-        RoomComponent roomComponent = roomService.getRoomComponentById(bookingRequestParam.getRoomComponentId());
+    public Booking save(BookingRequest bookingRequest) {
+        RoomComponent roomComponent = roomService.getRoomComponentById(bookingRequest.getRoomComponentId());
 
         if (roomComponent == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        if (bookingRepository.existsById(new BookingId(roomComponent, bookingRequestParam.getDate())))
+        if (bookingRepository.existsById(new BookingId(roomComponent, bookingRequest.getDate())))
             throw new ResponseStatusException(HttpStatus.CONFLICT);
 
-        Booking booking = new Booking(bookingRequestParam.getUserId(), bookingRequestParam.getDate(), roomComponent);
+        Booking booking = new Booking(bookingRequest.getUserId(), bookingRequest.getDate(), roomComponent);
         return bookingRepository.save(booking);
     }
 
-    public boolean deleteBooking(BookingRequestParam bookingRequestParam) {
-        RoomComponent roomComponent = roomService.getRoomComponentById(bookingRequestParam.getRoomComponentId());
+    public boolean deleteBooking(BookingRequest bookingRequest) {
+        RoomComponent roomComponent = roomService.getRoomComponentById(bookingRequest.getRoomComponentId());
 
         if (roomComponent == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        BookingId bookingId = new BookingId(roomComponent, bookingRequestParam.getDate());
+        BookingId bookingId = new BookingId(roomComponent, bookingRequest.getDate());
         boolean exists = bookingRepository.existsById(bookingId);
         if (!exists)
             return false;
