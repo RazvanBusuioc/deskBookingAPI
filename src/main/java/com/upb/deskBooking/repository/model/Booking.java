@@ -9,14 +9,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Entity
-@IdClass(BookingId.class)
-public class Booking implements Cloneable {
+public class Booking {
 
-    @NotNull @OneToOne(cascade = {CascadeType.MERGE})
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @OneToOne()
     User user;
-    @Id @NotNull @OneToOne(cascade = {CascadeType.MERGE})
+    @OneToOne()
     RoomComponent roomComponent;
-    @Id @NotNull @JsonFormat(pattern="dd.MM.yyyy")
+    @JsonFormat(pattern="dd.MM.yyyy")
     Date date;
 
     public Booking() {
@@ -26,6 +28,14 @@ public class Booking implements Cloneable {
         this.user = user;
         this.date = date;
         this.roomComponent = roomComponent;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public User getUser() {

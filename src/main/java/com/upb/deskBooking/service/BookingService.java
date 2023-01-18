@@ -66,7 +66,7 @@ public class BookingService {
         if (roomComponent == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        if (bookingRepository.existsById(new BookingId(roomComponent, bookingRequest.getDate())))
+        if (bookingRepository.existsByDateAndRoomComponent(bookingRequest.getDate(), roomComponent))
             throw new ResponseStatusException(HttpStatus.CONFLICT);
 
         String username = bookingRequest.getUsername();
@@ -85,11 +85,11 @@ public class BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         BookingId bookingId = new BookingId(roomComponent, bookingRequest.getDate());
-        boolean exists = bookingRepository.existsById(bookingId);
+        boolean exists = bookingRepository.existsByDateAndRoomComponent(bookingRequest.getDate(), roomComponent);
         if (!exists)
             return false;
 
-        bookingRepository.deleteById(bookingId);
+        bookingRepository.deleteByDateAndRoomComponent(bookingRequest.getDate(), roomComponent);
         return true;
     }
 }

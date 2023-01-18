@@ -10,5 +10,9 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Booking, BookingId> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    boolean existsByDateAndRoomComponent(Date date, RoomComponent roomComponent);
+
+    void deleteByDateAndRoomComponent(Date date, RoomComponent roomComponent);
 }
